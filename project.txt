@@ -1,0 +1,549 @@
+# CTU Bachelor Project - Working Notes
+
+---
+
+My Bachelor Project at CTU FEL
+
+https://shouldiuseros2.com/
+
+https://github.com/ament/ament_cmake/blob/master/ament_cmake_core/doc/resource_index.md
+
+REP 2001 ROS Bouncy and Newer Variants
+https://www.ros.org/reps/rep-2001.html
+https://github.com/ros2/variants
+
+---
+
+build env:
+	j ws
+	rh sw foxy
+	source ~/Sites/ros/ros2-additions/install/local_setup.bash
+	colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+	rm -rf build/ install/ log/
+
+clion startup env:
+	j ws
+	ros-vsc-sync
+	rh dev
+
+run env:
+	j ws
+	rh dev
+	ros2 launch launchers stage_sample_ftg.launch.py
+	car-start
+	car-stop
+
+	ros2 topic echo /stage_ros2/car/cmd_vel
+
+---
+
+PROBLEMS:
+
+1. see ~/Sites/ros/ubuntu-ros/nvidia-jetson-tx2/TODO.md
+2. perception/recognition/obstacle_substitution: extremely inefficient on TX2?
+	* compare with Ubuntu 20
+	* compare with ROS 1 Kinetic (both Ubuntu 16 and TX2)
+		* Kinetic on Ubuntu 18? So we can compare its performance with Foxy?
+        * https://answers.ros.org/question/297008/how-could-i-install-ros-on-ubuntu-18/
+3. fixed build (tf2 dependency on tx2, stage on ubuntu20 and tx2)
+4. build from sources > longer env setup
+	* [Sourcing setup.bash on ROS2 takes considerably longer compared to ROS1](https://github.com/ros2/ros2/issues/573)
+	* https://github.com/ros-infrastructure/ros_buildfarm
+	* https://github.com/ros-infrastructure/ros_buildfarm/blob/master/doc/jobs/release_jobs.rst
+	* https://github.com/ros-infrastructure/ros_buildfarm/tree/master/scripts/release
+	* https://www.google.com/search?q=ros2+build+from+source+slow&oq=ros2+build+from+source+slow
+5. no icons in rqt_* in ROS 2 on Ubuntu 20
+	* the following commands do NOT help:
+		* `sudo apt install tango-icon-theme`
+		* `sudo apt install gnome-icon-theme`
+	* might be related:
+		* [ROS2 port: Button icons don't show in Mac/Windows](https://github.com/ros-visualization/rqt/issues/165)
+
+---
+
+PROGRESS:
+
+1st build: Summary: 310 packages finished [2h 35min 6s]
+2nd build (ros2-mini + stage + additional): Summary: 285 packages finished [1h 33min 44s]
+
+nvidia
+
+sd, ext4
+boot
+
+uboot
+
+Podle toho zjistil, jsem potom naformátoval SD kartu jako ext4 s jednou partition, kam jsem překopíroval rootfs a upravil boot konfiguraci. Ve výsledku to funguje následovně:
+1. U-Boot (který je vždy na skrytém partition interní eMMC) při spuštění vybere odkud se bude bootovat.
+2. Pokud je připojená SD karta a na prvním oddíle existuje /boot/extlinux/extlinux.conf, načte boot konfiguraci odtamtud.
+3. Jinak vezme /boot/extlinux/extlinux.conf z eMMC.
+4. /boot/extlinux/extlinux.conf pak specifikuje odkud se mí vzít rootfs a jádro se vždy vezme z toho boot média.
+
+nejnovější JetPack a L4T. Jetpack 4.5.1 (L4T 32.5.1) (Ubuntu 18.04.5)
+# # R32 (release), REVISION: 5.1, GCID: 26202423, BOARD: t186ref, EABI: aarch64, DATE: Fri Feb 19 16:50:29 UTC 2021
+# Linux tx2-ros2 4.9.201-tegra #1 SMP PREEMPT Tue Mar 2 19:53:23 PST 2021 aarch64 aarch64 aarch64 GNU/Linux
+
+---
+
+PLAN:
+
+1. TX2 with ROS 2
+	a ROS2 build
+	b f1tenth build
+	c boot from SD card
+
+2. drive_api
+
+3. ROS 2 on a real auto
+	a Orbitty
+	b VESC driver
+		vesc_driver > only kinetic
+			https://index.ros.org/r/vesc/github-f1tenth-vesc/#kinetic
+			see this issue https://github.com/f1tenth/vesc/issues/5
+	c LIDAR
+		urg_node
+		https://github.com/f1tenth/f1tenth_system/tree/master/hokuyo_node
+
+		https://github.com/ros-drivers/urg_node/tree/foxy-devel
+
+		https://github.com/bponsler/urg_node/tree/ros2-devel
+
+		https://github.com/YDLIDAR/ydlidar_ros2
+
+		https://velodynelidar.com/
+		https://index.ros.org/p/velodyne_driver/#foxy
+
+4. follow_the_gap_v0 compare
+	works (no crashes)
+	CPU load
+	ROS 1:
+	ROS 2:
+
+	ROS 2 tracepoints
+		https://index.ros.org/r/ros2_tracing/
+		lltng
+		lttng module version >=2.10.7 required, found 2.10.2
+
+5. address_sanitizer (enable during build) and/or Valgrind
+
+---
+
+REALTIME:
+
+* temp:
+	* https://micro.ros.org/docs/tutorials/advanced/tracing/
+	* https://github.com/ros2/performance_test
+	* https://www.f0cal.com/
+	* http://linuxgizmos.com/cloud-based-test-farm-lets-you-check-out-edge-ai-software-on-linux-dev-boards/
+
+* Real-time programming in ROS 2
+	https://docs.ros.org/en/foxy/Tutorials/Real-Time-Programming.html
+
+* PAPER: Latency Overhead of ROS2 for Modular Time-Critical Systems
+	* https://arxiv.org/pdf/2101.02074.pdf
+	* ROS Discourse thread: https://discourse.ros.org/t/ros2-latency-using-different-node-setups/18335
+
+* PAPER: Response-Time Analysis of ROS 2 Processing Chains Under Reservation-Based Scheduling
+	* http://dx.doi.org/10.4230/LIPIcs.ECRTS.2019.6
+	* https://github.com/boschresearch/ros2_response_time_analysis
+
+* https://github.com/ros2/realtime_support/tree/master/rttest
+
+* LTTng + ros2_tracing
+	https://gitlab.com/ros-tracing/ros2_tracing
+
+* lttng module version >=2.10.7 required, found 2.10.2 (ros2cli on tx2)
+	* https://lttng.org/docs/#doc-ubuntu
+
+* ROScon 2019: Apex.AI - Doing Real-Time with ROS 2: Capabilities and Challenges
+	* https://www.apex.ai/roscon2019
+
+* ROS 2 Real-Time Working Group
+	* https://github.com/ros-realtime/community
+	* https://real-time-working-group.readthedocs.io/en/latest/
+	* RTWG meeting notes: https://docs.google.com/document/d/1zBKwDUDeWvJNyCvjzYriaZQoZO2VYGWe1uxw5Xxn5cY/edit
+	* original proposal for establishing RTWG: * https://discourse.ros.org/t/ros-2-and-real-time/8796
+	* tools:
+		* https://real-time-working-group.readthedocs.io/en/latest/Related-Projects/related_projects.html
+		* https://github.com/hsgwa/ros2_timer_latency_measurement/blob/master/setup.foxy.md
+
+---
+
+ROS 2 EXPLANATION:
+
+https://discourse.ros.org/t/ros2-global-parameter-server-status/10114
+https://github.com/fujitatomoya/ros2_persist_parameter_server
+
+global_param
+	Node
+
+ros master
+
+ros nodes
+
+
+ROS Services
+
+dynamic_reconfigure
+
+
+rclpy / rclcpp
+|
+rcl C bin
+|
+rmw
+|
+dds impl. (ePrisma FastDDS)
+
+colcon catkin_isolated
+	amnent
+		cmake
+		ament_cmake
+			Python
+			C++
+			C
+			IDL
+			launch Python scripts
+		ament_python
+			Python
+			setuptools
+			launch Python scripts
+
+ament
+
+---
+
+ROS LINKS
+
+https://docs.ros.org/en/foxy/Tutorials.html
+https://docs.ros.org/en/foxy/Guides.html
+https://index.ros.org/
+https://pypi.org/
+
+https://github.com/ros2/demos
+https://github.com/ros2/demos/tree/foxy/quality_of_service_demo
+https://answers.ros.org/question/322636/ros2-access-current-launchconfiguration/?answer=359167#post-id-359167
+https://answers.ros.org/question/340705/access-launch-argument-in-launchfile-ros2/
+
+https://setuptools.readthedocs.io/en/latest/index.html
+
+# TODO: https://answers.ros.org/question/358343/rate-and-sleep-function-in-rclpy-library-for-ros2/
+# TODO: https://nicolovaligi.com/concurrency-and-parallelism-in-ros1-and-ros2-application-apis.html
+# TODO: https://yuzhangbit.github.io/tools/several-ways-of-writing-a-ros-node/
+
+https://docs.ros.org/en/foxy/Concepts/About-Composition.html
+
+https://answers.ros.org/question/363630/how-to-install-a-python-file-with-ament_cmake/
+
+https://osrf.github.io/ros2multirobotbook/ros2_api.html
+
+https://answers.ros.org/question/365051/using-ros2-offline-ros_localhost_only1/
+
+https://answers.ros.org/question/312409/converting-dynamic-reconfigure-to-ros2-parameters/
+
+Package Manifest Format Three Specification <package format="3">
+	https://ros.org/reps/rep-0149.html
+
+TODO: https://docs.ros.org/en/foxy/Tutorials/Actions/Creating-an-Action.html
+
+https://www.ros-howto.com/question/371889-ros2-ros2-doctor-userwarning-pkg-has-been-updated-to-a-new-version
+
+https://github.com/ros2/examples/tree/foxy/rclpy
+
+https://ubuntu.com/blog/ros-2-command-line-interface
+
+https://www.allaban.me/posts/2020/08/ros2-setup-ide-docker/
+
+colcon build
+	--packages-up-to
+		builds the package you want, plus all its dependencies, but not the whole workspace (saves time)
+
+	--symlink-install
+		saves you from having to rebuild every time you tweak python scripts
+
+	--event-handlers console_direct+
+		shows console output while building (can otherwise be found in the log directory)
+
+https://index.ros.org/doc/ros2/Contributing/Migration-Guide/
+
+http://wiki.ros.org/ROS/Tutorials/WhereNext
+
+https://docs.ros.org/en/kinetic/api/catkin/html/index.html
+https://docs.ros.org/en/melodic/api/catkin/html/index.html
+https://docs.ros.org/en/noetic/api/catkin/html/index.html
+https://docs.ros.org/en/api/catkin/html/index.html
+
+https://hub.docker.com/_/ros?tab=description&page=1&ordering=last_updated
+
+https://nomnoml.com/
+
+https://github.com/osrf/docker_images/blob/master/ros/kinetic/ubuntu/xenial/desktop-full/Dockerfile
+
+https://github.com/osrf/docker_images/tree/master/ros/kinetic/ubuntu/xenial
+
+https://github.com/ros2
+https://en.wikipedia.org/wiki/Data_Distribution_Service
+https://github.com/ros2/freertps
+http://wiki.ros.org/ROS/Concepts
+https://zeromq.org/
+https://nanomsg.org/
+https://index.ros.org/doc/ros2/Concepts/
+https://index.ros.org/doc/ros2/Concepts/About-Different-Middleware-Vendors/
+https://design.ros2.org/articles/ros_on_dds.html
+https://capnproto.org/
+[ZeroMQ vs Redis](https://gist.github.com/hmartiro/85b89858d2c12ae1a0f9)
+
+---
+
+FTG ROS 1 on Ubuntu 16:
+
+	nodes:
+		/drive_api
+		/follow_the_gap_ride_ubuntu16_ros_...
+		/follow_the_gap_ubuntu16_ros_...
+		/recognition_obstacle_sub
+		/rosout
+		/stage_simulator
+		/tf_base_laser_link
+		/tf_odom_map
+
+	params:
+
+		/drive_api/speed_modifier
+		/drive_api/steer_modifier
+		/follow_the_gap_ride_ubuntu16_ros_.../Hysteresis_L12
+		/follow_the_gap_ride_ubuntu16_ros_.../Hysteresis_L23
+		/follow_the_gap_ride_ubuntu16_ros_.../Speed_avoid
+		/follow_the_gap_ride_ubuntu16_ros_.../Speed_max
+		/follow_the_gap_ride_ubuntu16_ros_.../Speed_min
+		/follow_the_gap_ride_ubuntu16_ros_.../Switch_L12
+		/follow_the_gap_ride_ubuntu16_ros_.../Switch_L23
+		/follow_the_gap_ride_ubuntu16_ros_.../TurnL_avoid
+		/follow_the_gap_ride_ubuntu16_ros_.../TurnL_max
+		/follow_the_gap_ride_ubuntu16_ros_.../TurnL_min
+		/follow_the_gap_ride_ubuntu16_ros_.../TurnR_avoid
+		/follow_the_gap_ride_ubuntu16_ros_.../TurnR_max
+		/follow_the_gap_ride_ubuntu16_ros_.../TurnR_min
+		/rosdistro
+		/roslaunch/uris/host_ubuntu16_ros__39445
+		/rosversion
+		/run_id
+		/use_sim_time
+
+		drive_api: {speed_modifier: 7.26, steer_modifier: 0.7}
+		follow_the_gap_ride_ubuntu16_ros_19722_6785051304590735534: {Hysteresis_L12: 5.0,
+		  Hysteresis_L23: 5.0, Speed_avoid: 0.098602794, Speed_max: 0.158483034, Speed_min: 0.138522954,
+		  Switch_L12: 20.0, Switch_L23: 41.0, TurnL_avoid: 1.419354839, TurnL_max: 1.0, TurnL_min: 0.677419355,
+		  TurnR_avoid: 1.290322581, TurnR_max: 0.709677419, TurnR_min: 0.677419355}
+
+	topics:
+
+		/base_pose_ground_truth
+		/base_scan
+		/camera_info
+		/clock
+		/cmd_vel
+		/command
+		/depth
+		/drive_api/command
+		/eStop
+		/final_heading_angle
+		/follow_the_gap_ride_ubuntu16_ros_19722_6785051304590735534/parameter_descriptions
+		/follow_the_gap_ride_ubuntu16_ros_19722_6785051304590735534/parameter_updates
+		/ftg/angle/hyster
+		/ftg/angle/hyster_a
+		/ftg/angle/switch
+		/ftg/angle/switch_a
+		/ftg/filter/alpha
+		/ftg/speed/avoidF
+		/ftg/speed/maxF
+		/ftg/speed/minF
+		/ftg/turn/left/avoidF
+		/ftg/turn/left/maxF
+		/ftg/turn/left/minF
+		/ftg/turn/right/avoidF
+		/ftg/turn/right/maxF
+		/ftg/turn/right/minF
+		/gap_found
+		/image
+		/left_constraint_index
+		/lsr/angle
+		/obstacles
+		/odom
+		/right_constraint_index
+		/rosout
+		/rosout_agg
+		/scan
+		/tf
+		/visualize_final_heading_angle
+		/visualize_largest_gap
+		/visualize_obstacles
+
+---
+
+f1tenth ROS 1 build:
+
+Running command: "cmake /home/pokusew/remote/f1tenth/base_overlay/src -DCATKIN_BLACKLIST_PACKAGES=ceres-solver;cartographer -DCMAKE_BUILD_TYPE=Release -DCATKIN_ENABLE_TESTING=False -DCATKIN_DEVEL_PREFIX=/home/pokusew/remote/f1tenth/base_overlay/devel -DCMAKE_INSTALL_PREFIX=/home/pokusew/remote/f1tenth/base_overlay/install -G Unix Makefiles" in "/home/pokusew/remote/f1tenth/base_overlay/build"
+
+Stage 4.1.1
+
+Orbitty
+VESC
+Lidar
+IMU
+Teensy
+Intel RealSense
+
+System dependencies have not been satisfied:
+apt	ros-kinetic-razor-imu-9dof
+apt	libgflags-dev
+apt	python-scipy
+apt	ros-kinetic-urg-node
+apt	protobuf-compiler
+apt	ros-kinetic-serial
+apt	ros-kinetic-ackermann-msgs
+apt	python-sphinx
+apt	libatlas-base-dev
+apt	liblua5.2-dev
+apt	libgoogle-glog-dev
+apt	ros-kinetic-sick-tim
+apt	libopencv-dev
+apt	ros-kinetic-imu-filter-madgwick
+apt	libsuitesparse-dev
+apt	ros-kinetic-rosserial-python
+
+git submodule update --init --recursive
+
+cd src/auxiliary/googlecartographer_ros/
+sudo apt-get install ninja-build
+
+follow ./README.md:
+cartographer/scripts/install_proto3.sh
+
+then README.md of src/auxiliary/obstacle_detector
+
+catkin_make -DCATKIN_BLACKLIST_PACKAGES="ceres-solver;cartographer;follow_the_gap_v0" -DCMAKE_BUILD_TYPE=Release -DCATKIN_ENABLE_TESTING=False
+
+---
+
+INTERESTING:
+
+* F1/10 Race
+	* https://f1tenth.dev/
+	* https://github.com/f1tenth-dev
+	* https://linklab-uva.github.io/autonomousracing/
+
+* [Pyroscope](https://github.com/pyroscope-io/pyroscope)
+	* 🔥 Continuous Profiling Platform 🔥 Debug performance issues down to a single line of code
+
+* Apex.AI / Apex.OS
+	* https://www.apex.ai/apex-os
+	* https://gitlab.com/ApexAI
+
+* Toyota Selects ROS-Based Apex.os to Underpin Automated Vehicle Platform
+	* https://www.forbes.com/sites/samabuelsamid/2021/04/14/toyota-selects-apexos-to-underpin-automated-vehicle-platform/?sh=2198d8b0163a
+
+* [The Construct: A Platform to Learn ROS-based Advanced Robotics Online](https://www.theconstructsim.com/)
+
+* [HackerNews: ROS](https://hn.algolia.com/?dateRange=all&page=0&prefix=false&query=ros&sort=byDate&type=story)
+
+* ROS integration of LaMa - a Localization and Mapping package from the Intelligent Robotics and Systems (IRIS) Laboratory, University of Aveiro
+	* It provides 2D Localization and SLAM. It works great on a TurtleBot2 with a Raspberry Pi 3 Model B+ and an Hokuyo (Rapid URG).
+	* https://github.com/iris-ua/iris_lama_ros
+	* https://github.com/iris-ua/iris_lama
+
+* Autoware
+
+	Autoware
+	========
+	``The Autoware Foundation is a non-profit organization supporting open-source
+	projects enabling self-driving mobility.''
+	- https://www.autoware.org/
+	- https://www.autoware.ai/
+	- https://www.autoware.io/
+	- https://www.autoware.auto/
+	Autoware.AI
+	-----------
+	- https://github.com/Autoware-AI
+	- ROS 1
+	- Localization
+	- Detection
+	- Prediction and Planning
+	- Output: twist of velocity and angular velocity
+	I think this is something we already have with f1t. I think it's not worthy
+	trying due to ROS 1 and different architecture.
+	Autoware.Auto
+	-------------
+	- https://gitlab.com/autowarefoundation/autoware.auto
+	- https://gitlab.com/autowarefoundation/autoware.auto/AutowareAuto
+	I think we should try Autoware.Auto on f1t as part of migration to ROS 2.
+	Related and may be interesting: https://openadx.eclipse.org/
+	Autoware.IO
+	-----------
+	- Check the simulator: https://www.lgsvlsimulator.com/
+	- Different HW platforms
+	I think we should check out the simulator and other components. Maybe some
+	student for that?
+	Related and may be interesting: https://iot.eclipse.org/
+
+* MIT RACECAR
+	* https://mitll-racecar-mn.readthedocs.io/en/latest/
+
+---
+
+OTHER:
+
+* [How to start a GUI software on a remote Linux PC via SSH
+](https://askubuntu.com/questions/47642/how-to-start-a-gui-software-on-a-remote-linux-pc-via-ssh)
+
+* [Permanent hostname change on Ubuntu](https://askubuntu.com/questions/816449/permanent-hostname-change-on-ubuntu)
+
+* [Changed hostname, closed before changing hosts, now sudo is broken, catch-22!](https://askubuntu.com/questions/319265/changed-hostname-closed-before-changing-hosts-now-sudo-is-broken-catch-22?rq=1)
+
+* [Git Tools - Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
+
+* auto env change / shell tools
+	* https://direnv.net/
+	* http://modules.sourceforge.net/
+
+* [VSCode Git: support HEAD <> working tree changes in gutter](https://github.com/Microsoft/vscode/issues/60389)
+
+* https://github.com/lehmannro/assert.sh
+
+* [Which USB to TTL converter](https://forum.arduino.cc/index.php?topic=383469.0)
+
+* Segger
+	* [Segger J-Link vs. JTAG Programmer?](https://electronics.stackexchange.com/questions/332386/segger-j-link-vs-jtag-programmer)
+
+* USB 3.0 extension cable
+* microUSB cables
+
+* [Control linux console session keyboard over ssh](https://superuser.com/questions/322658/control-linux-console-session-keyboard-over-ssh)
+	* https://github.com/debauchee/barrier
+	* https://github.com/symless/synergy-core
+	* https://symless.com/synergy
+
+* [Network service discovery disabled: What does this mean for me?](https://askubuntu.com/questions/339702/network-service-discovery-disabled-what-does-this-mean-for-me)
+
+* [Why does my hostname appear with the address 127.0.1.1 rather than 127.0.0.1 in /etc/hosts?](https://serverfault.com/questions/363095/why-does-my-hostname-appear-with-the-address-127-0-1-1-rather-than-127-0-0-1-in)
+
+* [SSH server on Ubuntu](https://linuxize.com/post/how-to-enable-ssh-on-ubuntu-18-04/)
+
+* Honeywell NXP i.MX 8 GPU benchmarks
+	* https://www.eembc.org/adasmark/
+	* EEMBC ADASMark
+	* OpenCL
+
+* VMware Fusion
+	* shared folders
+		* https://askubuntu.com/questions/377029/change-ownership-of-vmware-fusion-shared-folder
+		* `sudo umount /mnt/hgfs`
+		* `vmhgfs-fuse .host:/ros /home/pokusew/ros -o uid=1000 -o gid=1000`
+	* mouse wheel problems in GNOME
+		* https://superuser.com/questions/1270811/inconsistent-and-erratic-mouse-wheel-in-linux-while-moving-the-mouse-pointer
+		* https://communities.vmware.com/t5/VMware-Fusion-Discussions/Mouse-wheel-scrolling-skips-clicks/td-p/463246
+		* https://askubuntu.com/questions/255890/how-can-i-adjust-the-mouse-scroll-speed
+
+---
+
+
