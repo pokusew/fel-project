@@ -44,6 +44,9 @@ nbproject/private/
 /ros/
 /showcase/
 /working-dot-vscode-for-ros-2/
+/final-report/tex/ctustyle3/
+/final-report/tex/*.ref
+/final-report/tex/*.pdf
 
 # local files
 *.local.*
