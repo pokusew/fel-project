@@ -1,3 +1,4 @@
+% CTUstyle3 template
 \input ctustyle3
 
 \worktype [O/EN]
@@ -16,16 +17,16 @@
 
 \abstractEN {
 
-	The new version of the Robot Operating System – ROS 2 – brings significant improvements
-	over its predecessor \hbox{ROS 1}. We briefly describe both versions and compare their differences.
-	Then we cover the process of migrating a ROS 1 application to ROS 2 on the example of the Follow the Gap app
+	The new version of the Robot Operating System – ROS~2 – brings significant improvements
+	over its predecessor ROS~1. We briefly describe both versions and compare their differences.
+	Then we cover the process of migrating a ROS 1 application to ROS~2 on the example of the Follow the Gap app
 	that is part of CTU's F1/10 project.
 
 	In the next part, we focus on setting up an NVIDIA Jetson TX2 module so that it can run ROS 2 applications and
 	provide good developer experience in environments where Jetson module is shared among many students and
 	researches.
 
-	The first result of this project is \hbox{a ROS 2} port of the Follow the Gap application. Its working is
+	The first result of this project is a~ROS~2 port of the Follow the Gap application. Its working is
 	demonstrated in the Stage simulator on Ubuntu and macOS. The second result is a setup guide for NVIDIA Jetson
 	TX2 that covers creating a fully-setup OS image with ROS 2 on a bootable SD card. The last result is a
 	collection of setup guides and documentation that cover various aspects of working with ROS.
@@ -44,16 +45,21 @@
 	preparation of university theses.
 }
 
+% link glossary data
+\input glossary
+
+% make title page, acknowledgment, contents etc.
 \makefront
 
-\chap Introduction
-TODO
+% contents
+\input 1-introduction
+\input 2-ros
+\input 3-f1tenth
+\input 4-jetson
+\input 5-conclusion
 
-\chap ROS
-\sec ROS 1
-TODO
+% appendices
+\input appendices
 
-\chap Conclusion
-TODO
-
+% document end
 \bye

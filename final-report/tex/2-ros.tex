@@ -1,0 +1,112 @@
+\chap Robot Operating System
+
+\sec ROS Computation Graph
+
+\sec Common Concepts
+
+\sec ROS 1
+
+TODO
+
+\secc Architecture
+
+TODO
+
+\secc Build System
+
+TODO
+
+\secc CLI
+
+TODO
+
+\secc Launch System
+
+TODO
+
+\sec ROS 2
+
+\secc Architecture
+
+\secc Build System
+
+\secc CLI
+
+\secc Launch System
+
+\sec Summary of Differences between ROS 1 and ROS 2
+
+ROS~2 has better architecture and offers more features. Thanks to DDS, it offers fine-grained QoS. It supports
+reliable communication in non-ideal networks. Furthermore, the ROS 2 client libraries offer better control
+over code execution and threading as they support writing custom executors. ROS 2 architecture is designed with
+real-time support in mind (TODO: footnote)
+
+The following table summarizes the most notable differences between ROS 1 and ROS 2:
+
+\midinsert
+\clabel[ros-comparison]{Summary of Differences between ROS 1 and ROS 2}
+\ctable{lll}{
+	Feature & ROS 1 Kinetic Kame & ROS 2 Foxy Fitzroy \crl \tskip4pt
+	Supported Platforms
+	& only Ubuntu officially supported (TODO: footnote)
+	& Ubuntu, macOS, Windows (TODO: footnote) officially supported
+	\cr
+	Main Client Libraries
+	& roscpp (C++), rospy (Python)
+	& rclcpp (C++), rclpy (Python)
+	\cr
+	C++
+	& C++03
+	& C++14
+	\cr
+	Python
+	& Python 2
+	& Python 3
+	\cr
+	Real-Time Support
+	& no
+	& yes
+	\cr
+	Runtime Node Composition
+	& no (TODO: Nodelets)
+	& Composable Nodes
+	\cr
+	Parameters
+	& global Parameter Server
+	& parameters per node (no global Parameter Server), out-of-the-box “dynamic_reconfigure”-like features
+	\cr
+	Launch System
+	& XML-based
+	& Python-based
+	\cr
+	Transport
+	& TCPROS or UDPROS
+	& DDS (fine-grained QoS)
+	\cr
+	Communication Primitives
+	& pub/sub, services, actions
+	& pub/sub, services, actions
+	\cr
+	Threading Model
+	& not much customizable
+	& granular execution models, custom executors
+	\cr
+	Build
+	& catkin + catkin_make/catkin_make_isolated
+	& ament + colcon
+	\cr
+	Pure Python Packages
+	& no
+	& yes
+	\cr
+	Pure CMake Packages
+	& no
+	& yes
+	\cr
+	IDL
+	& .msg/.srv
+	& .msg/.srv/.action + extended features such as constraints
+	\cr
+}
+\caption/t Summary of Differences between ROS 1 and ROS 2.
+\endinsert
