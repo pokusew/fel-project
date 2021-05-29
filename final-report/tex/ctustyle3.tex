@@ -401,8 +401,8 @@
 	\_setbox0=\_vsplit\.leftbox to\.frontht
 	\_ifvoid\.leftbox
 	\_setbox\.leftbox=\_box0
-	\_insertoutline{Abstract/Abstrakt}
-	\.frontpage[Abstract/Abstrakt]
+	\_insertoutline{Abstract} % TODO: \_insertoutline{Abstract/Abstrakt}
+	\.frontpage[Abstract/]    % TODO: \.frontpage[Abstract/Abstrakt]
 	\_else
 	\_setbox1=\_box\.leftbox  % long abstracts, two pages for abstracts
 	\_setbox\.leftbox=\_box0
