@@ -1,8 +1,54 @@
+\label[ros]
 \chap Robot Operating System
+
+The Robot Operating System (or ROS) is “an open-source, meta-operating system”~\cite[ros1_intro]
+that consists of “tools, libraries, and conventions that aim to simplify the task of creating complex and
+robust robot applications across a wide variety of robotic platforms“~\cite[ros2_foxy_root].
+
+A typical ROS application is composed of loosely coupled processes – nodes – (potentially distributed across
+machines) that communicate with each other and work together to accomplish a certain goal (for example,
+autonomous vehicle control). Each node can perform only a specific limited set of functions (e.g.: one node
+can read data from LIDAR, another node can implement an obstacle detection algorithm from the LIDAR data and
+another node can use the detected obstacles to plan the trajectory, etc.).
+
+Such architecture greatly supports the separations of concerns and allows code reuse. That further enables
+efficient code sharing of common functional among different projects with different applications. That in
+fact, is one of the most significant features of ROS as there are thousands of ROS packages provided by the
+ROS community. Then, developers can focus on their application specific problems while reusing the code for
+the common parts.
+
 
 \sec ROS Computation Graph
 
-\sec Common Concepts
+At runtime, ROS nodes and their communication interactions form so called “ROS Computation
+Graph”~\cite[ros1_concepts]. The nodes are represented by the graph's vertices, while the edges
+depicts the communication interactions.
+
+(TODO: computation graph image)
+
+
+ROS provides several {\em communication primitives} that can be used by nodes:
+\begitems \style n
+* {\sbf messages and topics} – publish/subscribe \nl
+Nodes (publishers) can publish messages to a named topic. Other nodes (subscribers) can subscribe to a
+topic and receive the published messages.
+
+* {\sbf services} – synchronous RPC (Remote Procedure Call) (server/client) \nl
+Nodes (service servers) can provide services. A service has a name. Other nodes (service clients) can
+invoke/call a service and synchronously get a result.
+
+* {\sbf actions} – asynchronous preemptible RPC with continuous feedback (server/client) \nl
+Node (action servers) can provide actions. An action is preemptible task that has a goal, can provide
+continuous feedback and returns a result if it is not cancelled. Other nodes (action clients) can invoke an
+action (request a goal and subscribe for its feedback and result).
+
+\enditems
+
+The communication is strongly typed and ROS provides an interface description language (IDL) for describing
+message types (used for pub/sub), service types and action types.
+
+
+\sec ROS Common Concepts
 
 \sec ROS 1
 

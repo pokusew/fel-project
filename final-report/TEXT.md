@@ -93,7 +93,7 @@ another node can use the detected obstacles to plan the trajectory, etc.).
 Such architecture greatly supports the separations of concerns and allows code reuse. That further enables
 efficient code sharing of common functional among different projects with different applications. That in
 fact, is one of the most significant features of ROS as there are thousands of ROS packages provided by the
-ROS community . Then, developers can focus on their application specific problems while reusing the code for
+ROS community. Then, developers can focus on their application specific problems while reusing the code for
 the common parts.
 
 
