@@ -1,3 +1,7 @@
+# OBSOLETE: It was rewritten to TeX. See the [tex](./tex) directory.
+
+---
+
 # Migration of F1/10 Autonomous Driving Stack to ROS 2
 
 **Possible names:**
