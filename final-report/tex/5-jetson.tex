@@ -1,23 +1,36 @@
 \chap[jetson] NVIDIA Jetson TX2 Setup
 
-TODO
+In order to run ROS 2 on NVIDIA Jetson TX2, we needed to prepare an appropriate OS image.
 
 
 \sec Initial Setup
 
-TODO
+The whole process is described \nl at \url{https://github.com/pokusew/ros-setup/blob/master/nvidia-jetson-tx2/SETUP.md}.
 
 
 \sec Building ROS 2 from sources
 
-TODO
+The whole process is described \nl at \url{https://github.com/pokusew/ros-setup/blob/master/nvidia-jetson-tx2/SETUP.md}.
 
 
 \sec Running the Follow the Gap Demo
 
-TODO
+After we set up the ROS 2 environment on NVIDIA Jetson TX2, we wanted to demonstrate its working.
+Though normally one would not use GUI on NVIDIA Jetson TX2, in this part of project we did decide to try it.
+So we prepared also build of the Stage simulator for TX2's Ubuntu 18.
+Then we successfully ran the Follow the Gap application.
+
+\midinsert
+\clabel[img_follow_the_gap_ros2_stage_tx2]{Follow the Gap in the Stage simulator on~NVIDIA Jetson~TX2}
+\picw=14cm \cinspic ../images/follow_the_gap_ros2_stage_tx2.png
+\caption/f Running Follow the Gap application in the Stage simulator in ROS~2 on~NVIDIA Jetson~TX2
+\endinsert
 
 
 \sec Bootable SD Card
 
-TODO
+We prepared a bootable SD Card.
+
+% According to the Jetson_TX1_TX2_Developer_Kit_Carrier_Board_Specification_v20170501, Section 2.4:
+% A full size SD Card (J12) is implemented, supporting up to SDR104 mode (UHS-1).
+% NVIDIA Jetson has 3-level boot process which is in detail described at~\cite[l4t_tx2_boot_flow].
