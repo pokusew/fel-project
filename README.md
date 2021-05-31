@@ -19,7 +19,7 @@ from ROS 1 to ROS 2.
 
 * [pokusew/fel-project](https://github.com/pokusew/fel-project) _(this repository)_
   – Project notes and reports 📝
-* [pokusew/f1tenth-rewrite](https://github.com/pokusew/f1tenth-rewrite) _(private)_
+* [pokusew/f1tenth-rewrite](https://github.com/pokusew/f1tenth-rewrite)
   – ROS 2 port of CTU F1/10 project 🏎
 * [pokusew/ros-setup](https://github.com/pokusew/ros-setup) 
   – Setup notes for using ROS on different platforms (Ubuntu, macOS, NVIDIA Jetson TX2) and using ROS with
