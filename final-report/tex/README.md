@@ -23,7 +23,7 @@ The TeX sources of the Final Report consists of the following files:
 
 ```
 
-The images and diagrams are in the upper level [images](../images) direcotry.
+The images and diagrams are in the upper level [images](../images) directory.
 
 
 ## Building
