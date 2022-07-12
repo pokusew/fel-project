@@ -33,5 +33,5 @@ which is a TeX distribution (TeX Live) that contains OpTeX.
 
 Run the following command to build the `index.pdf` (which is the whole Final Report):
 ```bash
-optex 0-index.tex
+optex index.tex
 ```
