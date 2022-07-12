@@ -35,3 +35,13 @@ Run the following command to build the `index.pdf` (which is the whole Final Rep
 ```bash
 optex index.tex
 ```
+
+It may be useful to build and then open using `open`:
+```bash
+optex index.tex && open index.pdf
+```
+
+To copy the resulting output PDF to a final place:
+```bash
+cp index.pdf ../Endler-Martin-ROS-2-Final-Report-Latest.pdf
+```
