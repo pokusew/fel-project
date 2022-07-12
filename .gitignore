@@ -12,26 +12,17 @@ Desktop.ini
 .atom/
 .vscode/
 
-# NetBeans
-nbproject/private/
-
 # JetBrains IDEs
-# currently, there is no need to keep /.idea/ under VCS
-# as this project does not need any special config
-/.idea/
-# # JetBrains IDEs
-# # see https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
-# **/.idea/workspace.xml
-# **/.idea/tasks.xml
-# **/.idea/usage.statistics.xml
-# **/.idea/shelf/
-# **/.idea/httpRequests/
-# **/.idea/dataSources/
-# **/.idea/dataSources.local.xml
-# captures
+# see https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+# note: in the future, we might version it
+.idea/
 
 # common files
 *.log
+
+# local-only files (may be useful during development)
+*.local.*
+*.local
 
 
 ### PROJECT
@@ -41,15 +32,12 @@ nbproject/private/
 /formalities/
 /jetson/
 /realtime-papers/
+/papers/
 /ros/
 /showcase/
-/working-dot-vscode-for-ros-2/
+
+# final report template
 /final-report/tex/ctustyle3/
+# final report build output
 /final-report/tex/*.ref
 /final-report/tex/*.pdf
-
-# local files
-*.local.*
-
-# copied remote history
-*/.bash_history
